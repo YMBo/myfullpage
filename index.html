@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>演示</title>
+	<link rel="stylesheet" type="text/css" href="css/fullpage.css">
+	<script type="text/javascript" src='js/jquery.min.js'></script>
+	<script type="text/javascript" src='js/fullpage.js'></script>
+</head>
+<body>
+	<div id="pagepiling">
+		<div class="section"><h1>11111111111111</h1></div>
+		<div class="section"><h1>22222222222222</h1></div>
+		<div class="section"><h1>333333333333333</h1></div>
+		<div class="section"><h1>44444444444</h1></div>
+	</div>
+	<script type="text/javascript">
+		$(function(){
+			$('#pagepiling').fullPage({
+				'loop':true,
+				'duration' : 500,
+			})
+		})
+	</script>
+</body>
+</html>
