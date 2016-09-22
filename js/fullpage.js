@@ -1,6 +1,8 @@
 (function($){
 	//初始化
 	$(function(){
+		//移动端meta
+		$(document.head).append(<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">)
 		//
 		$(document.body).css({'overflow':'hidden'})
 		//添加父元素
