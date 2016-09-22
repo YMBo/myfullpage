@@ -56,6 +56,7 @@ $(function(){
 			SP.show();
 			showStyle();
 			clickShow();
+
 		};
 		//右侧导航函数
 		SP.show=function(){
@@ -70,6 +71,12 @@ $(function(){
 			}else{
 				return;
 			}
+			//为每个小圆点绑定事件(事件委托)
+			$("#pages").delegate("li","click",function(){
+				index=$(this).attr('data-ind');
+				clickShow(index);
+				SP.move(index);
+			});
 		}
 		//右侧导航定义样式
 		function showStyle(){
@@ -80,6 +87,10 @@ $(function(){
 				'margin-bottom':'10px',
 				'padding':'2px',
 				'borderRadius':'50%'
+			})
+			var i=0;
+			$('#pages li').each(function(){
+				$(this).attr({'data-ind':i++})
 			})
 			$('#pages').css({
 				'position':'fixed',
@@ -96,6 +107,7 @@ $(function(){
 					'background':showBg
 				})
 		}
+		
 		//向上滑动事件
 		SP.moveUp=function(){
 			if(flag){
