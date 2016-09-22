@@ -1,14 +1,23 @@
 (function($){
+	//初始化
+	$(function(){
+		//添加父元素
+		$('#pagepiling').wrap('<div class="pagepilingBox"></div>');
+		$('.pagepilingBox').css({
+			'overflow':'hidden',
+			'height':$(window).height()+'px'
+		})
+		$('#pagepiling').css({
+			'position':'absolute',
+			'top':0
+		})
+	})
 	//自定义一个对象
 	var defaults={
 		//主容器
 		'container':'#pagepiling',
 		//分页
 		'sections':'.section',
-		//时间
-		
-		//是否循环
-		
 	}
 	var opts;
 	//声明一个数组,用来存放这几页
