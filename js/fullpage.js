@@ -8,6 +8,7 @@
 		$('.pagepilingBox').css({
 			'overflow':'hidden',
 			'height':$(window).height()+'px',
+			'width':'100%',
 			'position':'fixed'
 		})
 		$('#pagepiling').css({
