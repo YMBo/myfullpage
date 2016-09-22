@@ -1,11 +1,14 @@
 (function($){
 	//初始化
 	$(function(){
+		//
+		$(document.body).css({'overflow':'hidden'})
 		//添加父元素
 		$('#pagepiling').wrap('<div class="pagepilingBox"></div>');
 		$('.pagepilingBox').css({
 			'overflow':'hidden',
-			'height':$(window).height()+'px'
+			'height':$(window).height()+'px',
+			'position':'fixed'
 		})
 		$('#pagepiling').css({
 			'position':'absolute',
