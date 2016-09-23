@@ -3,12 +3,12 @@ $(function(){
 		//初始化
 		//移动端meta
 		//初始化
+		$(document.head).append('<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">')
+		$(document.body).css({'overflow':'hidden'})
+		//添加父元素
+		$('#pagepiling').wrap('<div class="pagepilingBox"></div>');
 		begin();
 		function begin(){
-			$(document.head).append('<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">')
-			$(document.body).css({'overflow':'hidden'})
-			//添加父元素
-			$('#pagepiling').wrap('<div class="pagepilingBox"></div>');
 			$('.pagepilingBox').css({
 				'overflow':'hidden',
 				'width':'100%',
@@ -30,14 +30,14 @@ $(function(){
 			'show':true,
 			//右侧导航默认背景色
 			'showBg':'rgba(0,0,0,.5)',
-			//右侧导航默认选种颜色
+			//右侧导航默认颜色
 			'clickShowBg':'rgba(238,238,238,.7)',
 			//时间默认 500
 			'duration':500,
 			//是否显示滚动条
 		 	'scrollBar':false,
-		 	//滚动条颜色默认
-		 	'scrollBarBg':'rgba(0,0,0,.5)'
+		 	//滚动条颜色
+		 	'scrollBarBg':'rgba(0,0,0,.8)'
 		}
 		var opts;
 		//声明一个数组,用来存放这几页
@@ -49,6 +49,7 @@ $(function(){
 		var flag=true;
 		var show;
 		var clickShowBg;
+		var scrollBarBg;
 		var showScrollBar;
 		//右侧导航边框颜色
 		var showBg;
@@ -60,6 +61,7 @@ $(function(){
 			showBg=opts.showBg;
 			showScrollBar=opts.scrollBar;
 			clickShowBg=opts.clickShowBg;
+			scrollBarBg=opts.scrollBarBg;
 			sections=container.children(opts.sections);
 			sections.each(function(){
 				arrElement.push($(this));
@@ -90,18 +92,21 @@ $(function(){
 				'right':'0',
 				'top':'0',
 			})
+			showBar.beginBar();
+		}
+		showBar.beginBar=function(){
 			$('#scrollBarBox .scrollBar').css({
 				'width':'5px',
 				'height':$(window).height()/arrElement.length+'px',
 				'position':'absolute',
-				'background':'rgba(0,0,0,.5)',
-				'borderRadius':'50%'
+				'background':scrollBarBg,
+				'borderRadius':'5px',
 			})
 		}
 		//滚动条移动效果
 		function showBarMove(index){
 			$('#scrollBarBox .scrollBar').stop().animate({
-				'top':index*$('#scrollBarBox .scrollBar').height()+'px'
+				'top':index*$('#scrollBarBox .scrollBar').height()+'px',
 			},dur)
 		}
 		//右侧导航函数
@@ -157,7 +162,9 @@ $(function(){
 			}).siblings().css({
 					'background':showBg
 				})
-			showBarMove(index);
+			if(showScrollBar){
+					showBarMove(index);
+				}
 		}
 		
 		//向上滑动事件
@@ -167,9 +174,6 @@ $(function(){
 					index--;
 				}else if(opts.loop){
 					index=(arrElement.length-1);
-				}
-				if(showScrollBar){
-					showBarMove(index);
 				}
 				if(show){
 					clickShow(index);
@@ -187,9 +191,6 @@ $(function(){
 					index++;
 				}else if(opts.loop){
 					index=0;
-				}
-				if(showScrollBar){
-					showBarMove(index);
 				}
 				if(show){
 					clickShow(index);
@@ -224,6 +225,8 @@ $(function(){
 			//右侧小圆点导航重置
 			showPosi();
 			begin();
+			showBar.beginBar();
+			showBarMove(index);
 		});
 		
 		//滚动函数
