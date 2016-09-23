@@ -100,7 +100,7 @@ $(function(){
 				'height':$(window).height()/arrElement.length+'px',
 				'position':'absolute',
 				'background':scrollBarBg,
-				'borderRadius':'5px',
+				'borderRadius':'4px',
 			})
 		}
 		//滚动条移动效果
