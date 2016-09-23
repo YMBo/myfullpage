@@ -2,32 +2,42 @@ $(function(){
 	(function($){
 		//初始化
 		//移动端meta
-		$(document.head).append('<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">')
-		$(document.body).css({'overflow':'hidden'})
-		//添加父元素
-		$('#pagepiling').wrap('<div class="pagepilingBox"></div>');
-		$('.pagepilingBox').css({
-			'overflow':'hidden',
-			'width':'100%',
-			'height':$(window).height()+'px',
-			'position':'fixed'
-		})
-		$('#pagepiling').css({
-			'position':'absolute',
-			'top':0
-		})
+		//初始化
+		begin();
+		function begin(){
+			$(document.head).append('<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">')
+			$(document.body).css({'overflow':'hidden'})
+			//添加父元素
+			$('#pagepiling').wrap('<div class="pagepilingBox"></div>');
+			$('.pagepilingBox').css({
+				'overflow':'hidden',
+				'width':'100%',
+				'height':$(window).height()+'px',
+				'position':'fixed'
+			})
+			$('#pagepiling').css({
+				'position':'absolute',
+				'top':0
+			})
+		}
 		//自定义一个对象
 		var defaults={
 			//主容器
 			'container':'#pagepiling',
-			//分页
+			//分页 
 			'sections':'.section',
 			//是否显示右侧导航默认显示
 			'show':true,
 			//右侧导航默认背景色
 			'showBg':'rgba(0,0,0,.5)',
 			//右侧导航默认选种颜色
-			'clickShowBg':'#eee'
+			'clickShowBg':'rgba(238,238,238,.7)',
+			//时间默认 500
+			'duration':500,
+			//是否显示滚动条
+		 	'scrollBar':false,
+		 	//滚动条颜色默认
+		 	'scrollBarBg':'rgba(0,0,0,.5)'
 		}
 		var opts;
 		//声明一个数组,用来存放这几页
@@ -39,6 +49,7 @@ $(function(){
 		var flag=true;
 		var show;
 		var clickShowBg;
+		var showScrollBar;
 		//右侧导航边框颜色
 		var showBg;
 		var SP=$.fn.fullPage=function(options){
@@ -47,6 +58,7 @@ $(function(){
 			dur=opts.duration;
 			show=opts.show;
 			showBg=opts.showBg;
+			showScrollBar=opts.scrollBar;
 			clickShowBg=opts.clickShowBg;
 			sections=container.children(opts.sections);
 			sections.each(function(){
@@ -56,8 +68,42 @@ $(function(){
 			SP.show();
 			showStyle();
 			clickShow();
+			SP.showScrollBarD();
 
 		};
+		//判断是否显示滚动条
+		SP.showScrollBarD=function(){
+			if(showScrollBar){
+				showBar();
+			}else{
+				return;
+			}
+		}
+		//是否显示滚动条
+		function showBar(){
+			var bar='<div id="scrollBarBox"><div class="scrollBar"></div></div>';
+			$('#pagepiling').after(bar);
+			$('#scrollBarBox').css({
+				'width':'5px',
+				'height':$(window).height()+'px',
+				'position':'absolute',
+				'right':'0',
+				'top':'0',
+			})
+			$('#scrollBarBox .scrollBar').css({
+				'width':'5px',
+				'height':$(window).height()/arrElement.length+'px',
+				'position':'absolute',
+				'background':'rgba(0,0,0,.5)',
+				'borderRadius':'50%'
+			})
+		}
+		//滚动条移动效果
+		function showBarMove(index){
+			$('#scrollBarBox .scrollBar').stop().animate({
+				'top':index*$('#scrollBarBox .scrollBar').height()+'px'
+			},dur)
+		}
 		//右侧导航函数
 		SP.show=function(){
 			if(show){
@@ -66,35 +112,40 @@ $(function(){
 					pageHtml+='<li></li>'
 				}
 				pageHtml += '</ul>';
-				$('#pagepiling').append(pageHtml);
-				clickShow(index)
+				$('#pagepiling').after(pageHtml);
+				clickShow(index);
+				//为每个小圆点绑定事件(事件委托)
+				$("#pages").delegate("li","click",function(){
+					index=$(this).attr('data-ind');
+					clickShow(index);
+					SP.move(index);
+				});
 			}else{
 				return;
 			}
-			//为每个小圆点绑定事件(事件委托)
-			$("#pages").delegate("li","click",function(){
-				index=$(this).attr('data-ind');
-				clickShow(index);
-				SP.move(index);
-			});
+			
 		}
 		//右侧导航定义样式
 		function showStyle(){
 			$('#pages li').css({
-				'height':'5px',
-				'width':'5px',
+				'height':'8px',
+				'width':'8px',
 				'background':showBg,
 				'margin-bottom':'10px',
-				'padding':'2px',
 				'borderRadius':'50%'
 			})
 			var i=0;
 			$('#pages li').each(function(){
 				$(this).attr({'data-ind':i++})
 			})
+			showPosi();
+		}
+
+		//右侧导航定位
+		function showPosi(){
 			$('#pages').css({
 				'position':'fixed',
-				'right':'50px',
+				'right':'10px',
 				'top':$(window).height()/2-$('#pages').height()/2+'px',
 				'list-style':'none',
 			});
@@ -106,6 +157,7 @@ $(function(){
 			}).siblings().css({
 					'background':showBg
 				})
+			showBarMove(index);
 		}
 		
 		//向上滑动事件
@@ -116,11 +168,17 @@ $(function(){
 				}else if(opts.loop){
 					index=(arrElement.length-1);
 				}
+				if(showScrollBar){
+					showBarMove(index);
+				}
+				if(show){
+					clickShow(index);
+				}
 				SP.move(index);
 			}else{
 				return;
 			}
-			clickShow(index)
+			
 		}
 		//向下滑动事件
 		SP.moveDown=function(){
@@ -130,11 +188,16 @@ $(function(){
 				}else if(opts.loop){
 					index=0;
 				}
+				if(showScrollBar){
+					showBarMove(index);
+				}
+				if(show){
+					clickShow(index);
+				}
 				SP.move(index);
 			}else{
 				return;
 			}
-			clickShow(index)	
 		}
 		//全屏
 		/*arrElement这个属性在SP这个函数的外边是值为空，在里面就不是空，我的疑问，arrElement是全局的为什么，函数full访问不到.目前我能想到的答案，当我网页一打开就加载了
@@ -158,7 +221,9 @@ $(function(){
 			//为了控制top值 不能大小变化，而top不变吧
 			full();
 			SP.move(index);
-		
+			//右侧小圆点导航重置
+			showPosi();
+			begin();
 		});
 		
 		//滚动函数
