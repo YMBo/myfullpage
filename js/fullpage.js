@@ -77,30 +77,34 @@ $(function(){
 		SP.showScrollBarD=function(){
 			if(showScrollBar){
 				showBar();
+				showBar.drag();
 			}else{
 				return;
 			}
 		}
 		//是否显示滚动条
 		function showBar(){
-			var bar='<div id="scrollBarBox"><div class="scrollBar"></div></div>';
+			var bar='<div id="scrollBarBox" ><div class="scrollBar" unselectable="on" style="-moz-user-select:none "></div></div>';
 			$('#pagepiling').after(bar);
 			$('#scrollBarBox').css({
-				'width':'5px',
+				'width':'6px',
 				'height':$(window).height()+'px',
 				'position':'absolute',
 				'right':'0',
 				'top':'0',
+
 			})
 			showBar.beginBar();
 		}
 		showBar.beginBar=function(){
 			$('#scrollBarBox .scrollBar').css({
-				'width':'5px',
+				'width':'6px',
 				'height':$(window).height()/arrElement.length+'px',
 				'position':'absolute',
 				'background':scrollBarBg,
 				'borderRadius':'4px',
+				'cursor':'pointer',
+				'overflow':'hidden'
 			})
 		}
 		//滚动条移动效果
@@ -108,6 +112,36 @@ $(function(){
 			$('#scrollBarBox .scrollBar').stop().animate({
 				'top':index*$('#scrollBarBox .scrollBar').height()+'px',
 			},dur)
+		}
+
+		//拖动滚动条
+		showBar.drag=function(){
+			var t;
+			var gradon=false;
+			var current;
+			//禁止选中，要不没有这句话，就会有选中的问题
+			document.body.onselectstart = function(){return false};
+			$('#scrollBarBox .scrollBar').mousedown(function(event){
+				gradon=true;
+				cY=event.clientY;
+				t=event.clientY-parseInt($(this).css('top'));
+				$(document).mousemove(function(event){
+				if(gradon){
+					if(event.clientY>cY){
+						current=event.clientY-t>=(arrElement.length-1)*parseInt($('#scrollBarBox .scrollBar').css('height'))?(arrElement.length-1)*parseInt($('#scrollBarBox .scrollBar').css('height')):event.clientY-t;
+					}else{
+						current=event.clientY-t>=0?event.clientY-t:0;
+					}
+						$('#scrollBarBox .scrollBar').css({'top':current+'px'});
+						}
+					})
+				})
+			$(document).mouseup(function (){
+				if(gradon){
+				            $(this).unbind("mousemove")
+				}
+			/*	showBarMove(index);*/
+			}); 
 		}
 		//右侧导航函数
 		SP.show=function(){
@@ -128,7 +162,6 @@ $(function(){
 			}else{
 				return;
 			}
-			
 		}
 		//右侧导航定义样式
 		function showStyle(){
@@ -170,15 +203,17 @@ $(function(){
 		//向上滑动事件
 		SP.moveUp=function(){
 			if(flag){
-				if(index){
+				if(index<=(arrElement.length-1)&&index>0){
 					index--;
+					SP.move(index);
 				}else if(opts.loop){
 					index=(arrElement.length-1);
+					SP.move(index);
 				}
 				if(show){
 					clickShow(index);
 				}
-				SP.move(index);
+				
 			}else{
 				return;
 			}
@@ -187,8 +222,9 @@ $(function(){
 		//向下滑动事件
 		SP.moveDown=function(){
 			if(flag){
-				if(index<(arrElement.length-1)){
+				if(index<(arrElement.length-1)&&index>=0){
 					index++;
+
 				}else if(opts.loop){
 					index=0;
 				}
