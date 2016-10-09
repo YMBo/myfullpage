@@ -115,10 +115,11 @@ $(function(){
 		}
 
 		//拖动滚动条
-		showBar.drag=function(){
+		showBar.drag=function(event){
 			var t;
 			var gradon=false;
 			var current;
+			var currentTop=0;
 			//禁止选中，要不没有这句话，就会有选中的问题
 			document.body.onselectstart = function(){return false};
 			$('#scrollBarBox .scrollBar').mousedown(function(event){
@@ -138,9 +139,21 @@ $(function(){
 				})
 			$(document).mouseup(function (){
 				if(gradon){
+					gradon=false;
 				            $(this).unbind("mousemove")
+				//判断滚动条的位置
+				currentBarCenter=$('#scrollBarBox .scrollBar').offset().top+$('#scrollBarBox .scrollBar').height()/2;
+				for(var i=0;i<arrElement.length;i++){
+					if(currentBarCenter>=i*$('#scrollBarBox .scrollBar').height()&&currentBarCenter<(i+1)*$('#scrollBarBox .scrollBar').height()){
+						index=i;
+						showBarMove(index);
+						SP.move(index);
+						clickShow(index);
+					}
 				}
 			/*	showBarMove(index);*/
+
+				}
 			}); 
 		}
 		//右侧导航函数
